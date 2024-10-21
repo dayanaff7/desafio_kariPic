@@ -3,15 +3,35 @@
     <strong>Name:</strong>
     <%= picture.name %>
   </p>
+  <% if picture.image.attached? %>
+    <%= image_tag picture.image, class: 'img-fluid', alt: picture.name %>
+  <% else %>
+    <p>No image attached</p>
+  <% end %>
+  <h2>Comments:</h2>
+  <% picture.comments.each do |comment| %>
+    <div class="media mb-3">
+      <% if comment.user.profile_image.attached? %>
+        <%= image_tag comment.user.profile_image.variant(resize_to_fill: [50, 50]), class: "mr-3 rounded-circle", alt: comment.user.name %>
+      <% else %>
+        <%= image_tag 'default_profile.png', class: "mr-3 rounded-circle", size: "50x50", alt: "Default profile image" %>
+      <% end %>
+      <div class="media-body">
+        <h5 class="mt-0"><%= comment.user.name %></h5>
+        <p><%= comment.content %></p>
+      </div>
+    </div>
+  <% end %>
 
-  <p>
-    <strong>Content:</strong>
-    <%= picture.content %>
-  </p>
-
-  <p>
-    <strong>User:</strong>
-    <%= picture.user_id %>
-  </p>
-
+  <% if user_signed_in? %>
+    <h3>Add a Comment:</h3>
+    <%= form_with(model: [picture, Comment.new]) do |form| %>
+      <div class="form-group">
+        <%= form.label :content %>
+        <%= form.text_area :content, class: "form-control" %>
+      </div>
+      <%= form.submit "Post Comment", class: "btn btn-primary" %>
+    <% end %>
+  <% end %>
 </div>
+

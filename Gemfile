@@ -66,3 +66,4 @@ gem "activestorage", "~> 7.2"
 gem "figaro", "~> 1.2"
 gem "activerecord"
 gem "fiddle"
+

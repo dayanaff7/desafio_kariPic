@@ -1,5 +1,6 @@
 class PicturesController < ApplicationController
   before_action :set_picture, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!, only: [:new, :create]
 
   # GET /pictures or /pictures.json
   def index
@@ -8,6 +9,8 @@ class PicturesController < ApplicationController
 
   # GET /pictures/1 or /pictures/1.json
   def show
+    @picture = Picture.find(params[:id])
+    @comment = Comment.new
   end
 
   # GET /pictures/new
@@ -21,16 +24,11 @@ class PicturesController < ApplicationController
 
   # POST /pictures or /pictures.json
   def create
-    @picture = Picture.new(picture_params)
-
-    respond_to do |format|
-      if @picture.save
-        format.html { redirect_to @picture, notice: "Picture was successfully created." }
-        format.json { render :show, status: :created, location: @picture }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @picture.errors, status: :unprocessable_entity }
-      end
+    @picture = current_user.pictures.build(picture_params)
+    if @picture.save
+      redirect_to @picture, notice: 'Imagen subida con éxito.'
+    else
+      render :new, alert: 'No se pudo subir la imagen.'
     end
   end
 
@@ -65,6 +63,6 @@ class PicturesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def picture_params
-      params.require(:picture).permit(:name, :content, :user_id)
+      params.require(:picture).permit(:name, :content, :image)
     end
 end
